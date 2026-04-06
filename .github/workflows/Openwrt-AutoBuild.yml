@@ -234,6 +234,14 @@ jobs:
       uses: kiddin9/debugger-action@master
       if: contains(github.event.action, 'ssh')
 
+    - name: Build OpenWrt
+      working-directory: openwrt
+      run: |
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+        # Явная сборка тулчейна перед ядром
+        make toolchain/install -j$(nproc)
+              
     - name: Compile the firmware
       id: compile
       run: |
