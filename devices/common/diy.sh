@@ -1,5 +1,6 @@
 #!/bin/bash
 #=================================================
+exit 0
 shopt -s extglob
 
 sed -i '$a src-git kiddin9 https://github.com/Dronnis/kwrt-packages.git;main' feeds.conf.default
