@@ -14,4 +14,4 @@ sed -i 's/DEFAULT_PACKAGES +=/DEFAULT_PACKAGES += kmod-fs-f2fs kmod-mmc kmod-sdh
 
 sed -i 's/256/1024/g' target/linux/x86/image/Makefile
 
-
+echo "CONFIG_IA32_EMULATION=y" >> .config
