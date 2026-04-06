@@ -148,6 +148,13 @@ jobs:
         ln -sf /mnt/openwrt/build_dir openwrt/build_dir
         sudo ln -sf openwrt/staging_dir /mnt/openwrt/staging_dir
 
+    - name: Load openwrt .config
+      run: |
+        cd openwrt
+        wget -O .config https://downloads.openwrt.org/releases/25.12.2/targets/x86/64/config.buildinfo 
+
+     
+
 #    - name: Load custom configuration
 #      run: |
 #        function git_clone_path() {
