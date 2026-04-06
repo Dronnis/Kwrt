@@ -148,49 +148,49 @@ jobs:
         ln -sf /mnt/openwrt/build_dir openwrt/build_dir
         sudo ln -sf openwrt/staging_dir /mnt/openwrt/staging_dir
 
-    - name: Load custom configuration
-      run: |
-        function git_clone_path() {
-          trap 'rm -rf "$tmpdir"' EXIT
-          branch="$1" rurl="$2" mv="$3"
-          [[ "$mv" != "mv" ]] && shift 2 || shift 3
-          rootdir="$PWD"
-          tmpdir="$(mktemp -d)" || exit 1
-          if [ ${#branch} -lt 10 ]; then
-          git clone -b "$branch" --depth 1 --filter=blob:none --sparse "$rurl" "$tmpdir"
-          cd "$tmpdir"
-          else
-          git clone --filter=blob:none --sparse "$rurl" "$tmpdir"
-          cd "$tmpdir"
-          git checkout $branch
-          fi
-          if [ "$?" != 0 ]; then
-            echo "error on $rurl"
-            exit 1
-          fi
-          git sparse-checkout init --cone
-          git sparse-checkout set $@
-          [[ "$mv" != "mv" ]] && cp -rn ./* $rootdir/ || mv -n $@/* $rootdir/$@/
-          cd $rootdir
-          }
-        export -f git_clone_path
-        cp -rf devices/common/. openwrt/
-        cp -rf devices/${{matrix.target}}/. openwrt/
-        cp -rf devices openwrt/
-        cd openwrt
-        chmod +x devices/common/$DIY_SH
-        /bin/bash "devices/common/$DIY_SH"
-        cp -f devices/common/$CONFIG_FILE .config
-        if [ -f "devices/${{matrix.target}}/$CONFIG_FILE" ]; then
-          echo >> .config
-          cat devices/${{matrix.target}}/$CONFIG_FILE >> .config
-        fi
-        if [ -f "devices/${{matrix.target}}/$DIY_SH" ]; then
-          chmod +x devices/${{matrix.target}}/$DIY_SH
-          echo "/bin/bash devices/${{matrix.target}}/$DIY_SH"
-          /bin/bash "devices/${{matrix.target}}/$DIY_SH"
-        fi
-        cp -Rf ./diy/* ./ || true
+#    - name: Load custom configuration
+#      run: |
+#        function git_clone_path() {
+#          trap 'rm -rf "$tmpdir"' EXIT
+#          branch="$1" rurl="$2" mv="$3"
+#          [[ "$mv" != "mv" ]] && shift 2 || shift 3
+#          rootdir="$PWD"
+#          tmpdir="$(mktemp -d)" || exit 1
+#          if [ ${#branch} -lt 10 ]; then
+#          git clone -b "$branch" --depth 1 --filter=blob:none --sparse "$rurl" "$tmpdir"
+#          cd "$tmpdir"
+#          else
+#          git clone --filter=blob:none --sparse "$rurl" "$tmpdir"
+#          cd "$tmpdir"
+#          git checkout $branch
+#          fi
+#          if [ "$?" != 0 ]; then
+#            echo "error on $rurl"
+#            exit 1
+#          fi
+#          git sparse-checkout init --cone
+#          git sparse-checkout set $@
+#          [[ "$mv" != "mv" ]] && cp -rn ./* $rootdir/ || mv -n $@/* $rootdir/$@/
+#          cd $rootdir
+#          }
+#        export -f git_clone_path
+#        cp -rf devices/common/. openwrt/
+#        cp -rf devices/${{matrix.target}}/. openwrt/
+#        cp -rf devices openwrt/
+#        cd openwrt
+#        chmod +x devices/common/$DIY_SH
+#        /bin/bash "devices/common/$DIY_SH"
+#        cp -f devices/common/$CONFIG_FILE .config
+#        if [ -f "devices/${{matrix.target}}/$CONFIG_FILE" ]; then
+#          echo >> .config
+#          cat devices/${{matrix.target}}/$CONFIG_FILE >> .config
+#        fi
+#        if [ -f "devices/${{matrix.target}}/$DIY_SH" ]; then
+#          chmod +x devices/${{matrix.target}}/$DIY_SH
+#          echo "/bin/bash devices/${{matrix.target}}/$DIY_SH"
+#          /bin/bash "devices/${{matrix.target}}/$DIY_SH"
+#        fi
+#        cp -Rf ./diy/* ./ || true
 
 #    - name: Apply patches
 #      run: |
@@ -216,7 +216,7 @@ jobs:
     - name: Cache
       uses: stupidloud/cachewrtbuild@main
       with:
-        ccache: 'false'
+        ccache: 'true'
         mixkey: ${{ matrix.target }}
         clean: ${{ contains(github.event.action, 'nocache') }}
         prefix: ${{ github.workspace }}/openwrt
