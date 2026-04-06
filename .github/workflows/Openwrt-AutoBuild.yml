@@ -152,7 +152,8 @@ jobs:
       run: |
         cd openwrt
         wget -O .config https://downloads.openwrt.org/releases/25.12.2/targets/x86/64/config.buildinfo 
-        cat feeds.conf
+        cat feeds.conf.default
+
 
      
 
