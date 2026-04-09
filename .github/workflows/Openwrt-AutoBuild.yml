@@ -38,12 +38,7 @@ jobs:
       with:
           fetch-depth: 0
 
-    # - name: Set up secret file
-      # run: |
-        # echo ${{ secrets.TELEGRAM_CHAT_ID }} | sed 's/./& /g'
-        # echo ${{ secrets.TELEGRAM_TOKEN }} | sed 's/./& /g'
-
-    - name: Load Settings.ini
+    - name: Загрузка Settings.ini
       run: |
         echo ${{matrix.target}}
         source "${{ github.workspace }}/devices/common/settings.ini"
@@ -225,14 +220,14 @@ jobs:
     - name: Cache
       uses: stupidloud/cachewrtbuild@main
       with:
-        ccache: 'true'
+        ccache: 'false'
         mixkey: ${{ matrix.target }}
         clean: ${{ contains(github.event.action, 'nocache') }}
         prefix: ${{ github.workspace }}/openwrt
 
     - name: SSH connection to Actions
       uses: kiddin9/debugger-action@master
-      if: contains(github.event.action, 'ssh')
+#      if: contains(github.event.action, 'ssh')
 
     - name: Build OpenWrt
       working-directory: openwrt
@@ -241,7 +236,7 @@ jobs:
         ./scripts/feeds install -a
         # Явная сборка тулчейна перед ядром
         make toolchain/install -j$(nproc)
-              
+
     - name: Compile the firmware
       id: compile
       run: |
