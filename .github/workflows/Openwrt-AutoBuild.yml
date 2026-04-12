@@ -150,7 +150,10 @@ jobs:
 #        cat feeds.conf.default
 
 
-     
+    - name: check
+      run: |
+        cd openwrt
+        cat feeds.conf.default
 
     - name: Load custom configuration
       run: |
