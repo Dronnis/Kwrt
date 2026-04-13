@@ -187,15 +187,15 @@ jobs:
         fi
         cp -Rf ./diy/* ./ || true
 
-#    - name: Применение патчей
-#      run: |
-#        cd openwrt
-#        cp -rn devices/common/patches devices/${{matrix.target}}/
-#          if [ -n "$(ls -A devices/${{matrix.target}}/*.bin.patch 2>/dev/null)" ]; then
-#            git apply devices/${{matrix.target}}/patches/*.bin.patch
-#          fi
-#          find "devices/${{matrix.target}}/patches" -maxdepth 1 -type f -name '*.revert.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "patch -d './' -R --no-backup-if-mismatch -p1 -F 1 --ignore-whitespace -i '%'"
-#          find "devices/${{matrix.target}}/patches" -maxdepth 1 -type f -name '*.patch' ! -name '*.revert.patch' ! -name '*.bin.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "patch -d './' --no-backup-if-mismatch -p1 -F 1 --ignore-whitespace -i '%'"
+    - name: Применение патчей
+      run: |
+        cd openwrt
+        cp -rn devices/common/patches devices/${{matrix.target}}/
+          if [ -n "$(ls -A devices/${{matrix.target}}/*.bin.patch 2>/dev/null)" ]; then
+            git apply devices/${{matrix.target}}/patches/*.bin.patch
+          fi
+          find "devices/${{matrix.target}}/patches" -maxdepth 1 -type f -name '*.revert.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "patch -d './' -R --no-backup-if-mismatch -p1 -F 1 --ignore-whitespace -i '%'"
+          find "devices/${{matrix.target}}/patches" -maxdepth 1 -type f -name '*.patch' ! -name '*.revert.patch' ! -name '*.bin.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "patch -d './' --no-backup-if-mismatch -p1 -F 1 --ignore-whitespace -i '%'"
 
     - name: Openwrt вызов make defconfig
       run: |
@@ -219,14 +219,6 @@ jobs:
     - name: SSH-соединение с Actions
       uses: kiddin9/debugger-action@master
       if: contains(github.event.action, 'ssh')
-
-#    - name: Build OpenWrt
-#      working-directory: openwrt
-#      run: |
-#        ./scripts/feeds update -a
-#        ./scripts/feeds install -a
-#        # Явная сборка тулчейна перед ядром
-#        make toolchain/install -j$(nproc)
 
     - name: Компилирование прошивки
       id: compile
