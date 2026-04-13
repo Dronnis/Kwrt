@@ -58,7 +58,7 @@ jobs:
         sed -i "1a REPO_TOKEN=${{ secrets.TOKEN_KIDDIN9 }}" ${{ github.workspace }}/devices/common/diy.sh
         sed -i "1a TARGET=${{matrix.target}}" ${{ github.workspace }}/devices/common/diy.sh
 
-#    - name: Trigger Packages Update
+#    - name: Запуск обновления пакетов
 #     continue-on-error: true
 #      if: contains(github.event.action, 'pkg')
 #      run: |
@@ -70,7 +70,7 @@ jobs:
 #          --data '{"event_type": "update"}'
 #        fi
 
- #   - name: Free disk space
+ #   - name: Чистка окружения
  #     uses: coder-xiaomo/free-disk-space@main
  #     with:
  #       tool-cache: false
@@ -81,7 +81,7 @@ jobs:
  #       docker-images: true
  #       swap-storage: true
 
-    - name: Initialization environment
+    - name: Инициализация среды
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
@@ -97,7 +97,7 @@ jobs:
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"
 
-    - name: Get current date
+    - name: Получение текущей даты
       id: date
       run: |
         echo "date=$(date +'%m/%d_%Y_%H/%M')" >> $GITHUB_ENV
@@ -105,7 +105,7 @@ jobs:
         VERSION="$(echo "${{github.event.action}}" | grep -Eo " [0-9.]+" | sed -e 's/ //')" || true
         [ "$VERSION" ] && echo "VERSION=$VERSION" >> $GITHUB_ENV || echo "VERSION=$(date +'%m.%d')" >> $GITHUB_ENV
 
-    - name: Clone source code
+    - name: Клонирование исходного кода
       run: |
         set -x
         TAG_INFO="$(curl -gs -H 'Content-Type: application/json' \
@@ -135,19 +135,13 @@ jobs:
             fi
         fi
 
-    - name: Free up disk space
+    - name: Освобождение места на диске
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo mkdir -p -m 777 /mnt/openwrt/build_dir openwrt/staging_dir
         ln -sf /mnt/openwrt/build_dir openwrt/build_dir
         sudo ln -sf openwrt/staging_dir /mnt/openwrt/staging_dir
-
-#    - name: Load openwrt .config
-#      run: |
-#        cd openwrt
-#        wget -O .config https://downloads.openwrt.org/releases/25.12.2/targets/x86/64/config.buildinfo 
-#        cat feeds.conf.default
 
     - name: Загрузка конфигурации для сборки
       run: |
@@ -203,7 +197,7 @@ jobs:
 #          find "devices/${{matrix.target}}/patches" -maxdepth 1 -type f -name '*.revert.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "patch -d './' -R --no-backup-if-mismatch -p1 -F 1 --ignore-whitespace -i '%'"
 #          find "devices/${{matrix.target}}/patches" -maxdepth 1 -type f -name '*.patch' ! -name '*.revert.patch' ! -name '*.bin.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "patch -d './' --no-backup-if-mismatch -p1 -F 1 --ignore-whitespace -i '%'"
 
-    - name: Defconfig
+    - name: Openwrt вызов make defconfig
       run: |
         cd openwrt
         make defconfig
@@ -214,7 +208,7 @@ jobs:
         fi
         cat .config
 
-    - name: Cache
+    - name: Кеш сборки
       uses: stupidloud/cachewrtbuild@main
       with:
         ccache: 'false'
@@ -222,7 +216,7 @@ jobs:
         clean: ${{ contains(github.event.action, 'nocache') }}
         prefix: ${{ github.workspace }}/openwrt
 
-    - name: SSH connection to Actions
+    - name: SSH-соединение с Actions
       uses: kiddin9/debugger-action@master
       if: contains(github.event.action, 'ssh')
 
@@ -234,7 +228,7 @@ jobs:
 #        # Явная сборка тулчейна перед ядром
 #        make toolchain/install -j$(nproc)
 
-    - name: Compile the firmware
+    - name: Компилирование прошивки
       id: compile
       run: |
         shopt -s extglob
@@ -246,7 +240,7 @@ jobs:
         rm -rf staging_dir/toolchain-*/initial
         df -hT
 
-    - name: Organize files
+    - name: Организация файлов
       id: organize
       continue-on-error: true
       run: |
