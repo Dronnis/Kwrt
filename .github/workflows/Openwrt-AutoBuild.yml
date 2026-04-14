@@ -256,7 +256,7 @@ jobs:
         REMOTE_PORT: ${{ secrets.SERVER_PORT }}
         TARGET: "/www/wwwroot/dl.openwrt.ai/releases/tmp/"
 
-    - name: Upload firmware for artifact
+    - name: Загрузка прошивки и артефакта
       uses: actions/upload-artifact@main
       if: env.UPLOAD_FIRMWARE_FOR_ARTIFACT == 'true'
       with:
@@ -264,7 +264,7 @@ jobs:
         path: |
           openwrt/bin/targets/
 
-    - name: Create release
+    - name: Создание релиза
       id: create_release
       if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
       continue-on-error: true
@@ -275,7 +275,7 @@ jobs:
         [ ${{ env.COWURL }} ] && echo -e "[奶牛上传] (${{ env.COWURL }} 🐮)\n" >> release.txt
         [ ${{ env.NOTICE }} ] && echo -e "${{ env.NOTICE }}" >> release.txt || true
 
-    - name: Upload firmware for release
+    - name: Загрузка прошивки в релиз
       uses: softprops/action-gh-release@master
       continue-on-error: true
       if: env.REPO_TOKEN && env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true'
@@ -293,7 +293,7 @@ jobs:
       run: |
         curl -k --data chat_id="${{ env.TELEGRAM_CHAT_ID }}" --data "text=🎉 OpenWrt ${{ env.VERSION }} ${{matrix.target}} 编译成功 😋  https://dl.openwrt.ai/firmware/${{matrix.target}}/  ${{ env.COWURL }}   ${{ env.WETRANS }} 🚀" "https://api.telegram.org/bot${{ env.TELEGRAM_TOKEN }}/sendMessage"
 
-    - name: Delete workflow runs
+    - name: Удаление выполненых workflow
       uses: GitRML/delete-workflow-runs@main
       continue-on-error: true
       with:
@@ -301,7 +301,7 @@ jobs:
         retain_days: 100
         keep_minimum_runs: 0
 
-    - name: Remove old Releases
+    - name: Удаление старых релизов
       uses: dev-drprasad/delete-older-releases@master
       continue-on-error: true
       if: env.UPLOAD_FIRMWARE_FOR_RELEASE == 'true' && !cancelled()
