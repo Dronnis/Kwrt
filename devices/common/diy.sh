@@ -87,6 +87,7 @@ sed -i "s/OpenWrt/Kwrt/g" package/base-files/files/bin/config_generate package/b
 sed -i -e "s/set \${s}.country='\${country || ''}'/set \${s}.country='\${country || \"CN\"}'/g" -e "s/set \${s}.disabled=.*/set \${s}.disabled='0'/" package/network/config/wifi-scripts/files/lib/wifi/mac80211.uc
 
 sed -i 's/20251111/20260227/g' package/firmware/intel-microcode/Makefile
+sed -i 's/9b6d11cf851dbe483d3afe73e93049263f06b2f93c78a5f7b0068fb2f7ea3411/15289edaaa2db7976e005628027f16d19945f1eab1bb2d5dd44133cd06c4ad25/g' package/firmware/intel-microcode/Makefile
 
 
 rm -rf package/feeds/packages/jool
