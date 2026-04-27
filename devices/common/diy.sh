@@ -2,7 +2,7 @@
 #=================================================
 shopt -s extglob
 
-#sed -i '$a src-git kiddin9 https://github.com/Dronnis/kwrt-packages.git;main' feeds.conf.default
+sed -i '$a src-git kiddin9 https://github.com/Dronnis/kwrt-packages.git;main' feeds.conf.default
 sed -i "/telephony/d" feeds.conf.default
 
 sed -i "s?targets/%S/packages?targets/%S/\$(LINUX_VERSION)?" include/feeds.mk
@@ -12,7 +12,7 @@ sed -i '/	refresh_config();/d' scripts/feeds
 sed -i "s?git.openwrt.org/\(project\|feed\)?github.com/openwrt?g" feeds.conf.default
 
 ./scripts/feeds update -a
-#./scripts/feeds install -a -p kiddin9 -f
+./scripts/feeds install -a -p kiddin9 -f
 ./scripts/feeds install -a
 
 sed --follow-symlinks -i "s#%C\"#%C by Kiddin'\"#" package/base-files/files/etc/os-release
@@ -39,19 +39,19 @@ git_clone_path openwrt-25.12 https://github.com/immortalwrt/immortalwrt package/
 
 echo "$(date +"%s")" >version.date
 sed -i '/$(curdir)\/compile:/c\$(curdir)/compile: package/opkg/host/compile' package/Makefile
-#sed -i "s/DEFAULT_PACKAGES:=/DEFAULT_PACKAGES:=luci-app-advancedplus luci-app-firewall luci-app-package-manager luci-app-upnp luci-app-syscontrol luci-proto-wireguard \
-#luci-app-wizard luci-base luci-compat luci-lib-ipkg luci-lib-fs \
-#coremark wget-ssl curl autocore htop nano zram-swap kmod-lib-zstd kmod-tcp-bbr bash openssh-sftp-server block-mount resolveip ds-lite swconfig luci-app-fan luci-app-filemanager luci-app-wifihistory /" include/target.mk
+sed -i "s/DEFAULT_PACKAGES:=/DEFAULT_PACKAGES:=luci-app-advancedplus luci-app-firewall luci-app-package-manager luci-app-upnp luci-app-syscontrol luci-proto-wireguard \
+luci-app-wizard luci-base luci-compat luci-lib-ipkg luci-lib-fs \
+coremark wget-ssl curl autocore htop nano zram-swap kmod-lib-zstd kmod-tcp-bbr bash openssh-sftp-server block-mount resolveip ds-lite swconfig luci-app-fan luci-app-filemanager luci-app-wifihistory /" include/target.mk
 
 sed -i "s/^.*vermagic$/\techo '1' > \$(LINUX_DIR)\/.vermagic/" include/kernel-defaults.mk
 
-#status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/Dronnis/kwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
-#echo "$status"
-#while [[ "$status" == "in_progress" || "$status" == "queued" ]];do
-#	echo "wait 5s"
-#	sleep 5
-#	status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/Dronnis/kwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
-#done
+status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/Dronnis/kwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+echo "$status"
+while [[ "$status" == "in_progress" || "$status" == "queued" ]];do
+	echo "wait 5s"
+	sleep 5
+	status=$(curl -H "Authorization: token $REPO_TOKEN" -s "https://api.github.com/repos/Dronnis/kwrt-packages/actions/runs" | jq -r '.workflow_runs[0].status')
+done
 
 wget -N https://raw.githubusercontent.com/openwrt/packages/master/lang/golang/golang/Makefile -P feeds/packages/lang/golang/golang/
 
@@ -59,7 +59,7 @@ wget -N https://raw.githubusercontent.com/openwrt/packages/master/lang/golang/go
 
 sed -i "/+= targz/d" include/image.mk
 
-#git_clone_path master https://github.com/coolsnowwolf/lede mv target/linux/generic/hack-6.12
+git_clone_path master https://github.com/coolsnowwolf/lede mv target/linux/generic/hack-6.12
 
 rm -rf target/linux/generic/hack-6.12/767-net-phy-realtek-add-led*
 wget -N https://raw.githubusercontent.com/coolsnowwolf/lede/master/target/linux/generic/pending-6.12/613-netfilter_optional_tcp_window_check.patch -P target/linux/generic/pending-6.12/
